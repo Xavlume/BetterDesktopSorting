@@ -26,3 +26,7 @@ Locate the "Config.txt" file in the folder and open it with your preferred text 
 
 To change the sorting method, change the last line of the file with the character corresponding with the desired sorting method, the default being F, or file-type. The different sorting methods are listed in the introduction.
 ![Config_Image](Images/Config.png)
+##TO-DO List
+- Error Handling
+- Automatic configuration
+- Customisable file-type sorting
