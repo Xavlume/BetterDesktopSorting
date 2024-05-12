@@ -13,7 +13,7 @@ To see their effects, look in the Images/ folder
 First of all, Download the latest release and unzip "BetterDesktopSorting.exe" anywhere on your computer. 
 
 Then, run it once with icons in all four corners of the destop and four icons in the top left, as shown in the image.
-![Setup_Image](images/Setup.png)
+![Setup_Image](Images/Setup.png)
 
 Afterwards, run it again to sort your desktop!
 ## Configuration
@@ -25,4 +25,4 @@ Then, locate the "BetterDesktopSorting: folder and open it.
 Locate the "Config.txt" file in the folder and open it with your preferred text editor. 
 
 To change the sorting method, change the last line of the file with the character corresponding with the desired sorting method, the default being F, or file-type. The different sorting methods are listed in the introduction.
-![Config_Image](images/Config.png)
+![Config_Image](Images/Config.png)
