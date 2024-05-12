@@ -10,7 +10,7 @@ The included modes are:
 To see their effects, look in the Images/ folder
 ## Installation
 
-First of all, Download the latest release and unzip "BetterDesktopSorting.exe" anywhere on your computer. 
+First of all, Download the [latest release](https://github.com/Xavlume/BetterDesktopSorting/releases/latest) and drag "BetterDesktopSorting.exe" anywhere on your computer. 
 
 Then, run it once with icons in all four corners of the destop and four icons in the top left, as shown in the image.
 ![Setup_Image](Images/Setup.png)
