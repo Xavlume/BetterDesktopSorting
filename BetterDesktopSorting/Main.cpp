@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <cstdint>
 #include <vector>
+#include <algorithm>
 
 //https://devblogs.microsoft.com/oldnewthing/20130318-00/?p=4933
 //Huge help ^^
@@ -125,6 +126,14 @@ public:
         outFile.close();
     }
 };
+
+//https://stackoverflow.com/questions/875249/how-to-get-current-directory
+std::wstring ExePath() {
+    TCHAR buffer[MAX_PATH] = { 0 };
+    GetModuleFileName(NULL, buffer, MAX_PATH);
+    std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
+    return std::wstring(buffer).substr(0, pos);
+}
 
 
 void FindDesktopFolderView(REFIID riid, void** ppv)
@@ -309,8 +318,99 @@ void calibrated(std::string path) {
     }
 }
 
+bool CreateRegistryKey(HKEY hKeyRoot, LPCTSTR pszSubKey)
+{
+    HKEY hKey;
+    DWORD dwFunc;
+    LONG  lRet;
+
+    //------------------------------------------------------------------------------
+
+    SECURITY_DESCRIPTOR SD;
+    SECURITY_ATTRIBUTES SA;
+
+    if (!InitializeSecurityDescriptor(&SD, SECURITY_DESCRIPTOR_REVISION))
+        return false;
+
+    if (!SetSecurityDescriptorDacl(&SD, true, 0, false))
+        return false;
+
+    SA.nLength = sizeof(SA);
+    SA.lpSecurityDescriptor = &SD;
+    SA.bInheritHandle = false;
+
+    //------------------------------------------------------------------------------
+
+    lRet = RegCreateKeyEx(
+        hKeyRoot,
+        pszSubKey,
+        0,
+        (LPTSTR)NULL,
+        REG_OPTION_NON_VOLATILE,
+        KEY_WRITE,
+        &SA,
+        &hKey,
+        &dwFunc
+    );
+
+    if (lRet == ERROR_SUCCESS)
+    {
+        RegCloseKey(hKey);
+        hKey = (HKEY)NULL;
+        return true;
+    }
+
+    SetLastError((DWORD)lRet);
+    return false;
+}
+
+bool Set_StringRegistryValue(HKEY hKeyRoot, LPCTSTR pszSubKey, LPCTSTR pszValue, LPCTSTR pszString)
+{
+    HKEY  hKey;
+    LONG  lRes;
+    DWORD dwSize = lstrlen(pszString) * sizeof(TCHAR);
+
+    lRes = RegOpenKeyEx(hKeyRoot, pszSubKey, 0, KEY_WRITE, &hKey);
+
+    if (lRes != ERROR_SUCCESS)
+    {
+        SetLastError(lRes);
+        return false;
+    }
+
+    lRes = RegSetValueEx(hKey, pszValue, 0, REG_SZ, (unsigned char*)pszString, dwSize);
+
+    RegCloseKey(hKey);
+
+    if (lRes != ERROR_SUCCESS)
+    {
+        SetLastError(lRes);
+        return false;
+    }
+
+    return true;
+}
+
 int __cdecl wmain(int argc, wchar_t** argv)
 {
+
+    HKEY hKey;
+    HKEY hKey2;
+    DWORD data1 = 1;
+
+    int res = RegOpenKeyExW(HKEY_CLASSES_ROOT, L"Directory\\Background\\shell\\BetterDesktopSorting", 0, KEY_WRITE, &hKey);
+    if (ERROR_SUCCESS != res)
+    {
+        std::cout << CreateRegistryKey(HKEY_CLASSES_ROOT, L"Directory\\Background\\shell\\BetterDesktopSorting") << std::endl;
+    }
+    int res2 = RegOpenKeyExW(HKEY_CLASSES_ROOT, L"Directory\\Background\\shell\\BetterDesktopSorting\\command", 0, KEY_WRITE, &hKey2);
+    if (ERROR_SUCCESS != res2)
+    {
+        std::cout << CreateRegistryKey(HKEY_CLASSES_ROOT, L"Directory\\Background\\shell\\BetterDesktopSorting\\command") << std::endl;
+        std::cout << Set_StringRegistryValue(HKEY_CLASSES_ROOT, L"Directory\\Background\\shell\\BetterDesktopSorting\\command", L"(Default)", L" \"C:\\Users\\Xavier Boudreau\\Downloads\\BetterDesktopSorting-main\\BetterDesktopSorting-main\\x64\\Debug\\BetterDesktopSorting.exe\" ") << std::endl;
+
+    }
+
 
     char* buf = nullptr;
     size_t sz = 0;
